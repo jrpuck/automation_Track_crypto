@@ -1,0 +1,275 @@
+{
+  "name": "Crypto Price Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -304,
+        -16
+      ],
+      "id": "596d0978-26b1-471e-8832-c24e21d17431",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "5699488916",
+        "text": "=the new news the prix of bitcoin is {{ $json.bitcoin.usd }} and the prix of ethereum is {{ $json.ethereum.usd }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        -144
+      ],
+      "id": "1688093c-8b78-4277-b50b-746869d54f63",
+      "name": "Send a text message",
+      "webhookId": "46939282-1075-410b-9b59-85f1f6c4072e",
+      "credentials": {
+        "telegramApi": {
+          "id": "GIdrEkPpGyKNxMcl",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 19,
+              "triggerAtMinute": 28
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -496,
+        -16
+      ],
+      "id": "4d32ded5-0e5c-437b-aa60-58a31b63363d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4273c298-6add-44ca-87ee-ddf113313445",
+              "leftValue": "={{ $json.bitcoin.usd }}",
+              "rightValue": 155000,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            },
+            {
+              "id": "04682f7d-51eb-494d-a831-a88189f30cc2",
+              "leftValue": "={{ $json.ethereum.usd }}",
+              "rightValue": 5000,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": "={{ $json.bitcoin }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        -128
+      ],
+      "id": "d2a9a8ad-c86e-4a2e-820d-3053a613bbef",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "18IKNuFouYoWZMvqRb4oy-Dq1iIMFAryyBt7oGlwLyxg",
+          "mode": "list",
+          "cachedResultName": "Crypto Price Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18IKNuFouYoWZMvqRb4oy-Dq1iIMFAryyBt7oGlwLyxg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18IKNuFouYoWZMvqRb4oy-Dq1iIMFAryyBt7oGlwLyxg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "bitcoin",
+              "displayName": "bitcoin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ethereum",
+              "displayName": "ethereum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        112,
+        32
+      ],
+      "id": "7d1084f6-b5af-435c-a9d3-3b15224e5421",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "r2RELY9y2P1sOrmL",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78bd224c-3d5b-4767-b166-206cc8eb5e7c",
+              "name": "bitcoin",
+              "value": "={{ $json.bitcoin.usd }}",
+              "type": "number"
+            },
+            {
+              "id": "06bef5c2-b53d-4cb5-b430-5e0f4b9216d7",
+              "name": "ethereum",
+              "value": "={{ $json.ethereum.usd }}",
+              "type": "number"
+            },
+            {
+              "id": "1e98ec6d-f204-4d51-863f-6c37c9b11a31",
+              "name": "Date",
+              "value": "={{ $now.format('dd/LL/yyyy')}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        112
+      ],
+      "id": "50b1612c-1912-45ee-b81a-1e9ddae68bce",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Casablanca",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "KkcSpwxk0Lz3wBGs"
+  },
+  "versionId": "255f7cb6-1658-430a-8227-d40b14f16cf8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33b6faa30ba58c04638fe14d34448e21b5513e56de7d22f839babd6acdbe6620"
+  },
+  "id": "KkcSpwxk0Lz3wBGs",
+  "tags": []
+}
